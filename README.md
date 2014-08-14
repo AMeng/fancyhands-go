@@ -1,20 +1,27 @@
 FancyHands-Go
 =============
 
-FancyHands API Wrapper in Go!
+[FancyHands API](https://www.fancyhands.com/developer) Wrapper in Go!
 
 Installation:
 -------------
 ```
-go get github.com/AMeng/fancyhands-go
+go get github.com/ameng/fancyhands-go
 ```
 
 Example:
 --------
 
 ```go
+package main
+
+import (
+    "fmt"
+    "github.com/ameng/fancyhands-go"
+)
+
 func main() {
-    client := NewTestClient("YOUR KEY HERE", "YOUR SECRET HERE")
+    client := fancyhands.NewTestClient("YOUR KEY HERE", "YOUR SECRET HERE")
 
     status_code, response, err := client.Echo("hello world")
 
