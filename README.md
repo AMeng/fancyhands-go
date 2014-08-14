@@ -12,7 +12,7 @@ go get github.com/AMeng/fancyhands-go
 Example:
 --------
 
-```golang
+```go
 func main() {
     client := NewTestClient("YOUR KEY HERE", "YOUR SECRET HERE")
 
