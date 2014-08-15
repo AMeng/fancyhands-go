@@ -88,5 +88,5 @@ func (c *Client) CreateCustomTask(title string, desc string, bid float64, expira
 
 **CancelTask:** *Cancel a task based on its key.*
 ```go
-func (c *Client) CancelTask(key string) (code int, body string, err error)
+func (c *Client) CancelTask(key string)
 ```
