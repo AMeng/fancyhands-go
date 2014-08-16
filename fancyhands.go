@@ -122,6 +122,15 @@ func (c *Client) CreateMessage(key string, message string) (code int, body strin
     return c.post("request/standard/messages", data)
 }
 
+// Create a task for a phone call. The conversation field must be a string formatted as JSON.
+func (c *Client) Call(phone string, conversation string) (code int, body string, err error) {
+    data := make(map[string]string)
+    data["phone"] = phone
+    data["conversation"] = conversation
+
+    return c.post("call", data)
+}
+
 // Private
 // Send a POST request to the API
 func (c *Client) post(url string, data map[string]string) (code int, body string, err error) {
