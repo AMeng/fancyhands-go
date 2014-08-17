@@ -9,7 +9,11 @@ import (
 )
 
 const (
-    API_HOST = "https://www.fancyhands.com/api/v1/"
+    api_host       = "https://www.fancyhands.com/api/v1/"
+    STATUS_NEW     = 1
+    STATUS_OPEN    = 5
+    STATUS_CLOSED  = 20
+    STATUS_EXPIRED = 21
 )
 
 type Client struct {
@@ -65,22 +69,23 @@ func (c *Client) GetTask(key string) (code int, body string, err error) {
     data := make(map[string]string)
     data["key"] = key
 
-    return c.get("request/standard", data)
+    return c.get("request/custom", data)
 }
 
-// Get tasks filtered by status or by cursor. Pass in an empty string to omit one.
-func (c *Client) GetTasks(status string, cursor string) (code int, body string, err error) {
+// Get tasks filtered by status. Use the predefined status constants (fancyhands.STATUS_OPEN, etc).
+func (c *Client) GetTasksByStatus(status int) (code int, body string, err error) {
     data := make(map[string]string)
+    data["status"] = strconv.Itoa(status)
 
-    if status != "" {
-        data["status"] = status
-    }
+    return c.get("request/custom", data)
+}
 
-    if cursor != "" {
-        data["cursor"] = cursor
-    }
+// Get tasks filtered by cursor. The API may return a cursor for pagination.
+func (c *Client) GetTasksByCursor(cursor string) (code int, body string, err error) {
+    data := make(map[string]string)
+    data["cursor"] = cursor
 
-    return c.get("request/standard", data)
+    return c.get("request/custom", data)
 }
 
 // Create a task. All fields are required.
@@ -155,9 +160,9 @@ func (c *Client) request(url string, data map[string]string, method string) (cod
     }
 
     if method == "get" {
-        response, newErr = c.oauth_client.Get(API_HOST + url, data, c.token)
+        response, newErr = c.oauth_client.Get(api_host + url, data, c.token)
     } else if method == "post" {
-        response, newErr = c.oauth_client.Post(API_HOST + url, data, c.token)
+        response, newErr = c.oauth_client.Post(api_host + url, data, c.token)
     }
 
     if newErr != nil {
