@@ -16,62 +16,62 @@ const (
     STATUS_EXPIRED = 21
 )
 
-type client struct {
+type Client struct {
     test  bool
     oauth *oauth.Consumer
 }
 
-// Create a new client object
-func createClient(key string, secret string, test bool) *client {
-    return &client{
+// Create a new Client object
+func createClient(key string, secret string, test bool) *Client {
+    return &Client{
         test:  test,
         oauth: oauth.NewConsumer(key, secret, oauth.ServiceProvider{}),
     }
 }
 
-// Create an API client
-func NewClient(key string, secret string) *client {
+// Create an API Client
+func NewClient(key string, secret string) *Client {
     return createClient(key, secret, false)
 }
 
-// Create a test API client. This will send API calls without actually
+// Create a test API Client. This will send API calls without actually
 // sending tasks to Fancy Hands assistants.
-func NewTestClient(key string, secret string) *client {
+func NewTestClient(key string, secret string) *Client {
     return createClient(key, secret, true)
 }
 
 // Send a string to the API and it will echo it back.
-func (c *client) Echo(value string) (code int, body string, err error) {
+func (c *Client) Echo(value string) (code int, body string, err error) {
     return c.get("echo", map[string]string{"echo": value})
 }
 
 // Get all tasks
-func (c *client) GetAllTasks() (code int, body string, err error) {
+func (c *Client) GetAllTasks() (code int, body string, err error) {
     return c.get("request/custom", map[string]string{})
 }
 
 // Get a specific task based on its key
-func (c *client) GetTask(key string) (code int, body string, err error) {
+func (c *Client) GetTask(key string) (code int, body string, err error) {
     return c.get("request/custom", map[string]string{"key": key})
 }
 
 // Get tasks filtered by status. Use the predefined status constants (fancyhands.STATUS_OPEN, etc).
-func (c *client) GetTasksByStatus(status int) (code int, body string, err error) {
+func (c *Client) GetTasksByStatus(status int) (code int, body string, err error) {
     return c.get("request/custom", map[string]string{"status": strconv.Itoa(status)})
 }
 
 // Get tasks filtered by cursor. The API may return a cursor for pagination.
-func (c *client) GetTasksByCursor(cursor string) (code int, body string, err error) {
+func (c *Client) GetTasksByCursor(cursor string) (code int, body string, err error) {
     return c.get("request/custom", map[string]string{"cursor": cursor})
 }
 
 // Create a task. All fields are required.
-func (c *client) CreateTask(title string, desc string, bid float64, expiration time.Time) (code int, body string, err error) {
+func (c *Client) CreateTask(title string, desc string, bid float64, expiration time.Time) (code int, body string, err error) {
     return c.CreateCustomTask(title, desc, bid, expiration, "")
 }
 
 // Create a custom task. The custom field must be a string formatted as JSON.
-func (c *client) CreateCustomTask(title string, desc string, bid float64, expiration time.Time, custom string) (code int, body string, err error) {
+func (c *Client) CreateCustomTask(title string, desc string, bid float64, expiration time.Time, custom string) (code int, body string, err error) {
     // TODO: It would be nice to create a struct for 'custom'. Something like: map[int]map[string]string
 
     data := make(map[string]string)
@@ -88,32 +88,32 @@ func (c *client) CreateCustomTask(title string, desc string, bid float64, expira
 }
 
 // Cancel a task based on its key
-func (c *client) CancelTask(key string) (code int, body string, err error) {
+func (c *Client) CancelTask(key string) (code int, body string, err error) {
     return c.post("request/custom/cancel", map[string]string{"key": key})
 }
 
 // Add a message to a specific task based on the task's key.`
-func (c *client) CreateMessage(key string, message string) (code int, body string, err error) {
+func (c *Client) CreateMessage(key string, message string) (code int, body string, err error) {
     return c.post("request/standard/messages", map[string]string{"key": key, "message": message})
 }
 
 // Create a task for a phone call. The conversation field must be a string formatted as JSON.
-func (c *client) Call(phone string, conversation string) (code int, body string, err error) {
+func (c *Client) Call(phone string, conversation string) (code int, body string, err error) {
     return c.post("call", map[string]string{"phone": phone, "conversation": conversation})
 }
 
 // Send a POST request to the API
-func (c *client) post(url string, data map[string]string) (code int, body string, err error) {
+func (c *Client) post(url string, data map[string]string) (code int, body string, err error) {
     return c.request(url, data, "post")
 }
 
 // Send a GET request to the API
-func (c *client) get(url string, data map[string]string) (code int, body string, err error) {
+func (c *Client) get(url string, data map[string]string) (code int, body string, err error) {
     return c.request(url, data, "get")
 }
 
 // Send a request to the API
-func (c *client) request(url string, data map[string]string, method string) (code int, body string, err error) {
+func (c *Client) request(url string, data map[string]string, method string) (code int, body string, err error) {
     var response *http.Response
     var newErr error
     var response_body []byte
